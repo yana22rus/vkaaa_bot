@@ -57,3 +57,5 @@ for event in longpoll.listen():
 
                 send_random_gif(id_user)
 
+                add_id_user(id_user)
+
