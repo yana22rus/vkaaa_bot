@@ -12,16 +12,20 @@ api_session = vk_session.get_api()
 longpoll = VkLongPoll(vk_session)
 
 
-def random_files():
-    files = listdir(getenv("path_to_photo"))
+def random_files(path,extension):
+    files = listdir(path)
 
-    return f"{getenv('path_to_photo')}{getenv('name_file')}{randrange(0, len(files))}.jpg"
+    return f"{path}{randrange(1, len(files))}.{extension}"
 
 
 upload = VkUpload(vk_session)
 
 
 def send_random_photo(id_user):
+    vk_session.method("messages.send",
+                      {"user_id": id_user, "random_id": get_random_id(), "attachment": ",".join(attachments)})
+
+def send_random_gif(id_user):
     vk_session.method("messages.send",
                       {"user_id": id_user, "random_id": get_random_id(), "attachment": ",".join(attachments)})
 
@@ -33,13 +37,23 @@ for event in longpoll.listen():
 
             id_user = event.user_id
 
-            if msg != "":
+            if msg.lower() in ["2","фото","photo","/фото","/photo","фотку","фотки"]:
                 attachments = []
 
-                upload_image = upload.photo_messages(photos=random_files())[0]
+                upload_image = upload.photo_messages(photos=random_files(getenv("path_to_photo"),"jpg"))[0]
 
                 attachments.append(f"photo{upload_image['owner_id']}_{upload_image['id']}")
 
                 send_random_photo(id_user)
 
                 add_id_user(id_user)
+
+            if msg.lower() in ["1","гиф","gif","/гиф","/gif","гифку","гифки"]:
+                attachments = []
+
+                upload_gif = upload.document_message(doc=random_files(getenv("path_to_gif"),"gif"), peer_id=id_user)
+
+                attachments.append(f"doc{upload_gif['doc']['owner_id']}_{upload_gif['doc']['id']}")
+
+                send_random_gif(id_user)
+
