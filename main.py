@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from os import getenv, listdir
 from random import randrange
 from vk_api import VkApi, VkUpload
@@ -48,7 +50,7 @@ for event in longpoll.listen():
 
                 add_id_user(id_user)
 
-            if msg.lower() in ["1","гиф","gif","/гиф","/gif","гифку","гифки"]:
+            elif msg.lower() in ["1","гиф","gif","/гиф","/gif","гифку","гифки"]:
                 attachments = []
 
                 upload_gif = upload.document_message(doc=random_files(getenv("path_to_gif"),"gif"), peer_id=id_user)
@@ -58,4 +60,8 @@ for event in longpoll.listen():
                 send_random_gif(id_user)
 
                 add_id_user(id_user)
+
+            else:
+                vk_session.method("messages.send",{"user_id": id_user, "random_id": get_random_id(),"message":"Команда не найдена"})
+
 
